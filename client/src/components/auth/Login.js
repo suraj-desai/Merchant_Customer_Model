@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
-import {Redirect } from 'react-router-dom';
+import {Redirect } from 'react-router-dom'; 
 class Login extends Component {
   constructor() {
     super();
@@ -47,7 +47,6 @@ class Login extends Component {
     };
 
     this.props.loginUser(userData);
-    return <Redirect to="/login/user" />
   };
 
   render() {

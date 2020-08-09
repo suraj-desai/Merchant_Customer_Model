@@ -5,6 +5,8 @@ import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
+import axios from "axios";
+// import { payment } from "../../actions/authActions";
 
 
 class Dashboard extends Component {
@@ -12,11 +14,10 @@ class Dashboard extends Component {
     super(props);
     this.state = {
         name: "",
-        email: "",
-        password: "",
         city:"",
-        amount:"",
-        errors: {},  
+        amount:0,
+        errors: {},
+        singleUseCustomerToken:"",  
     };
 }
   onLogoutClick = e => {
@@ -26,12 +27,48 @@ class Dashboard extends Component {
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
   };
-checkout=(e)=>{
-  e.preventDefault();
+  payment =async userData=> {
+    var check=0;
+    await axios
+      .post("/api/users/payment", userData)
+      .then(res => {
+          console.log(this.props.auth.user.customerId);
+          console.log(res.data.id);
+          check=1;
+      })
+      .catch(()=>{
+        check=0;
+      })
+      return check;
+  };
+  checkout=async (e)=> {
+    e.preventDefault();
+    console.log("checkout");
+    const userData=this.props.auth.user;
+    await axios
+      .post("/api/users/token", userData)
+      .then(res => {
+          this.state.singleUseCustomerToken=res.data.singleUseCustomerToken;
+          console.log(res.data);
+          console.log('singleUseCustomerToken' + this.state.singleUseCustomerToken);
+      })
+      .catch(()=>{
+      })
+    if(this.state.singleUseCustomerToken==null){
+      console.log('checkoutWithoutToken');
+      this.checkoutWithoutToken();
+    }
+    else{
+      console.log('checkoutWithToken');
+      this.checkoutWithToken();
+    }
+};
+
+checkoutWithToken=(e)=>{
     window.paysafe.checkout.setup("cHVibGljLTc3NTE6Qi1xYTItMC01ZjAzMWNiZS0wLTMwMmQwMjE1MDA4OTBlZjI2MjI5NjU2M2FjY2QxY2I0YWFiNzkwMzIzZDJmZDU3MGQzMDIxNDUxMGJjZGFjZGFhNGYwM2Y1OTQ3N2VlZjEzZjJhZjVhZDEzZTMwNDQ=", {
         "currency": "USD",
-        "amount": 10000,
-        "singleUseCustomerToken": "SPFAB1cA5iwdu48H",
+        "amount": 100,
+        "singleUseCustomerToken": this.state.singleUseCustomerToken,
         "locale": "en_US",
         "customer": {
             "firstName": "John",
@@ -54,29 +91,26 @@ checkout=(e)=>{
             "state": "CA"
         },
         "environment": "TEST",
-        "merchantRefNum": "1559900597607",
+        "merchantRefNum": Date.now()+"",
         "canEditAmount": true,
         "paymentMethodDetails": {
-            "paysafecard": {
-                "consumerId": "1232323"
+            "card": {
             },
-            "paysafecash": {
-                "consumerId": "123456"
-            },
-            "sightline": {
-                "consumerId": "123456"
-            },
-            "vippreferred":{
-                "consumerId": "550726575"
-            }
-        },
-        "payoutConfig": {
-            "maximumAmount": 100000
-        }
-    }, function(instance, error, result) {
+          },
+    }, (instance, error, result)=>{
         if (result && result.paymentHandleToken) {
-            console.log(result.paymentHandleToken);
-            // make AJAX call to Payments API
+          const data=this.props.auth.user;
+          data.result=result;
+          (async ()=>{
+            const success= await this.payment(data);
+            console.log("succes"+success);
+            if(success){
+              instance.showSuccessScreen();
+            }
+            else {
+              instance.showFailureScreen();
+            }
+          })();
         } else {
             console.error(error);
             // Handle the error
@@ -90,9 +124,74 @@ checkout=(e)=>{
             default: // Handle the scenario
         }
     });
-
-  }
-
+  };
+  checkoutWithoutToken=(e)=>{
+            window.paysafe.checkout.setup("cHVibGljLTc3NTE6Qi1xYTItMC01ZjAzMWNiZS0wLTMwMmQwMjE1MDA4OTBlZjI2MjI5NjU2M2FjY2QxY2I0YWFiNzkwMzIzZDJmZDU3MGQzMDIxNDUxMGJjZGFjZGFhNGYwM2Y1OTQ3N2VlZjEzZjJhZjVhZDEzZTMwNDQ=",
+             {
+                "currency": "USD",
+                "amount": 100,
+                "locale": "en_US",
+                "customer": {
+                    "firstName": "John",
+                    "lastName": "may",
+                    "email": "john@paysafe.com",
+                    "phone": "1234567890",
+                    "dateOfBirth": {
+                        "day": 1,
+                        "month": 7,
+                        "year": 1990
+                    }
+                },
+                "billingAddress": {
+                    "nickName": "John My",
+                    "street": "West",
+                    "street2": "Montessori",
+                    "city": "Cupertino",
+                    "zip": "95015",
+                    "country": "US",
+                    "state": "CA"
+                },
+                "environment": "TEST",
+                "merchantRefNum": Date.now()+"",
+                "canEditAmount": true,
+                "merchantDescriptor": {   
+                    "dynamicDescriptor": "XYZ",
+                    "phone": "1234567890"
+                    },
+                "displayPaymentMethods":["card"],
+                "paymentMethodDetails": {
+                  "card": {
+                  },
+              }
+            }, (instance, error, result)=>{
+                if (result && result.paymentHandleToken) {
+                    const data=this.props.auth.user;
+                    data.result=result;
+                    (async ()=>{
+                      const success= await this.payment(data);
+                      console.log("succes"+success);
+                      if(success){
+                        instance.showSuccessScreen();
+                      }
+                      else {
+                        instance.showFailureScreen();
+                      }
+                    })();
+                    
+                } else {
+                    console.error(error);
+                    // Handle the error
+                }
+            }, function(stage, expired) {
+                switch(stage) {
+                    case "PAYMENT_HANDLE_NOT_CREATED": // Handle the scenario
+                    case "PAYMENT_HANDLE_CREATED": // Handle the scenario
+                    case "PAYMENT_HANDLE_REDIRECT": // Handle the scenario
+                    case "PAYMENT_HANDLE_PAYABLE": // Handle the scenario
+                    default: // Handle the scenario
+                }
+            });
+        }
   render() {
     const { user } = this.props.auth;
     const {errors} =this.state;

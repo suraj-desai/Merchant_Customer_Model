@@ -43,6 +43,24 @@ export const loginUser = userData => dispatch => {
     );
 };
 
+export const payment = userData => dispatch => {
+  
+  axios
+    .post("/api/users/payment", userData)
+    .then(res => {
+      // Save to localStorage
+      // Set token to localStorage
+      const { data } = res.data;
+      dispatch(setCurrentUser(data));
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 // Set logged in user
 export const setCurrentUser = decoded => {
   return {
