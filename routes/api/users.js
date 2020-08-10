@@ -191,10 +191,7 @@ router.post('/payment',(req,res)=>{
     if(result.customerOperation=="ADD"){
       console.log("payment with add");
       if(customerId==null){
-        console.log("at 1");
         data.merchantCustomerId=id;
-        console.log(typeof(data.merchantCustomerId));
-        console.log(typeof(id));
       }
       // else{
       //   console.log("at 2");
@@ -206,16 +203,13 @@ router.post('/payment',(req,res)=>{
       .then((resp)=>{
           console.log(resp.data);
           var query = {'email': email};
-          if(customerId!=null){
-            res.json(resp.data);
-          }
-          else{
+          if(resp.data.customerId){
             User.updateOne(query,{$set: { 'customerId': resp.data.customerId}}, {upsert: true}, function(err, doc) {
               if (err) console.log(err);
               else console.log('Successfully saved.');
             });
-            res.json(resp.data);
           }
+          res.json(resp.data);
       })
       .catch( (error)=>{
         console.log(error);
