@@ -14,7 +14,9 @@ class Dashboard extends Component {
     super(props);
     this.state = {
         name: "",
+        street:"",
         city:"",
+        zip:"",
         amount:0,
         errors: {},
         singleUseCustomerToken:"",  
@@ -69,10 +71,9 @@ checkoutWithToken=(e)=>{
         "singleUseCustomerToken": this.state.singleUseCustomerToken,
         "locale": "en_US",
         "customer": {
-            "firstName": "John",
-            "lastName": "Dee",
+            "firstName":this.state.name,
+            "lastName":"desai",
             "email": "johndee@paysafe.com",
-            "phone": "1234567890",
             "dateOfBirth": {
                 "day": 1,
                 "month": 7,
@@ -80,13 +81,10 @@ checkoutWithToken=(e)=>{
             }
         },
         "billingAddress": {
-            "nickName": "John Dee",
-            "street": "20735 Stevens Creek Blvd",
-            "street2": "Montessori",
-            "city": "Cupertino",
-            "zip": "95014",
-            "country": "US",
-            "state": "CA"
+            "street": this.state.street,
+            "city": this.state.city,
+            "zip": this.state.zip,
+            "country": "IN"
         },
         "environment": "TEST",
         "merchantRefNum": Date.now()+"",
@@ -133,10 +131,9 @@ checkoutWithToken=(e)=>{
                 "amount": this.state.amount*100,
                 "locale": "en_US",
                 "customer": {
-                    "firstName": "John",
-                    "lastName": "may",
+                    "firstName": this.state.name,
+                    "lastName":"desai",
                     "email": "john@paysafe.com",
-                    "phone": "1234567890",
                     "dateOfBirth": {
                         "day": 1,
                         "month": 7,
@@ -144,13 +141,10 @@ checkoutWithToken=(e)=>{
                     }
                 },
                 "billingAddress": {
-                    "nickName": "John My",
-                    "street": "West",
-                    "street2": "Montessori",
-                    "city": "Cupertino",
-                    "zip": "95015",
-                    "country": "US",
-                    "state": "CA"
+                  "street": this.state.street,
+                  "city": this.state.city,
+                  "zip": this.state.zip,
+                  "country": "IN"
                 },
                 "environment": "TEST",
                 "merchantRefNum": Date.now()+"",
@@ -247,6 +241,20 @@ checkoutWithToken=(e)=>{
               <div className="input-field col s12">
                 <input
                   onChange={this.onChange}
+                  value={this.state.street}
+                  error={errors.street}
+                  id="street"
+                  type="text"
+                  className={classnames("", {
+                    invalid: errors.street
+                  })}
+                />
+                <label htmlFor="street">street</label>
+                <span className="red-text">{errors.city}</span>
+              </div>
+              <div className="input-field col s12">
+                <input
+                  onChange={this.onChange}
                   value={this.state.city}
                   error={errors.city}
                   id="city"
@@ -255,8 +263,22 @@ checkoutWithToken=(e)=>{
                     invalid: errors.city
                   })}
                 />
-                <label htmlFor="city">City</label>
+                <label htmlFor="street">City</label>
                 <span className="red-text">{errors.city}</span>
+              </div>
+              <div className="input-field col s12">
+                <input
+                  onChange={this.onChange}
+                  value={this.state.zip}
+                  error={errors.zip}
+                  id="zip"
+                  type="text"
+                  className={classnames("", {
+                    invalid: errors.zip
+                  })}
+                />
+                <label htmlFor="zip">zip</label>
+                <span className="red-text">{errors.zip}</span>
               </div>
               <div className="input-field col s12">
                 <input
