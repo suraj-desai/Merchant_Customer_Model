@@ -25,7 +25,7 @@ class Dashboard extends Component {
     this.props.logoutUser();
   };
   onChange = e => {
-    this.setState({ [e.target.id]: e.target.value });
+    this.setState({ [e.target.id]: e.target.value});
   };
   payment =async userData=> {
     var check=0;
@@ -61,9 +61,11 @@ class Dashboard extends Component {
 };
 
 checkoutWithToken=(e)=>{
+  this.state.amount=parseInt(this.state.amount);
+  console.log(typeof(this.state.amount));
     window.paysafe.checkout.setup("cHVibGljLTc3NTE6Qi1xYTItMC01ZjAzMWNiZS0wLTMwMmQwMjE1MDA4OTBlZjI2MjI5NjU2M2FjY2QxY2I0YWFiNzkwMzIzZDJmZDU3MGQzMDIxNDUxMGJjZGFjZGFhNGYwM2Y1OTQ3N2VlZjEzZjJhZjVhZDEzZTMwNDQ=", {
         "currency": "USD",
-        "amount": 100,
+        "amount": this.state.amount*100,
         "singleUseCustomerToken": this.state.singleUseCustomerToken,
         "locale": "en_US",
         "customer": {
@@ -122,10 +124,13 @@ checkoutWithToken=(e)=>{
     });
   };
   checkoutWithoutToken=(e)=>{
+          this.state.amount=parseInt(this.state.amount);
+          console.log(this.state.amount);
+          console.log(typeof(this.state.amount));
             window.paysafe.checkout.setup("cHVibGljLTc3NTE6Qi1xYTItMC01ZjAzMWNiZS0wLTMwMmQwMjE1MDA4OTBlZjI2MjI5NjU2M2FjY2QxY2I0YWFiNzkwMzIzZDJmZDU3MGQzMDIxNDUxMGJjZGFjZGFhNGYwM2Y1OTQ3N2VlZjEzZjJhZjVhZDEzZTMwNDQ=",
              {
                 "currency": "USD",
-                "amount": 100,
+                "amount": this.state.amount*100,
                 "locale": "en_US",
                 "customer": {
                     "firstName": "John",
