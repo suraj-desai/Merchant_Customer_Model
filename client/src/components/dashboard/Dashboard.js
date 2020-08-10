@@ -32,8 +32,6 @@ class Dashboard extends Component {
     await axios
       .post("/api/users/payment", userData)
       .then(res => {
-          console.log(this.props.auth.user.customerId);
-          console.log(res.data.id);
           check=1;
       })
       .catch(()=>{
@@ -43,23 +41,21 @@ class Dashboard extends Component {
   };
   checkout=async (e)=> {
     e.preventDefault();
-    console.log("checkout");
+    
     const userData=this.props.auth.user;
     await axios
       .post("/api/users/token", userData)
       .then(res => {
           this.state.singleUseCustomerToken=res.data.singleUseCustomerToken;
-          console.log(res.data);
-          console.log('singleUseCustomerToken' + this.state.singleUseCustomerToken);
       })
       .catch(()=>{
       })
     if(this.state.singleUseCustomerToken==null){
-      console.log('checkoutWithoutToken');
+      
       this.checkoutWithoutToken();
     }
     else{
-      console.log('checkoutWithToken');
+      
       this.checkoutWithToken();
     }
 };
@@ -103,7 +99,7 @@ checkoutWithToken=(e)=>{
           data.result=result;
           (async ()=>{
             const success= await this.payment(data);
-            console.log("succes"+success);
+            
             if(success){
               instance.showSuccessScreen();
             }

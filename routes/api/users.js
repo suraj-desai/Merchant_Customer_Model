@@ -196,22 +196,26 @@ router.post('/payment',(req,res)=>{
         console.log(typeof(data.merchantCustomerId));
         console.log(typeof(id));
       }
-      else{
-        console.log("at 2");
-        data.customerId=customerId;
-      }
+      // else{
+      //   console.log("at 2");
+      //   data.customerId=customerId;
+      // }
       axios.post(url, data,{
         headers:headers,
       })
       .then((resp)=>{
           console.log(resp.data);
           var query = {'email': email};
-          User.updateOne(query,{$set: { 'customerId': resp.data.customerId}}, {upsert: true}, function(err, doc) {
-                  if (err) console.log(err);
-                  else console.log('Successfully saved.');
-                  
-          });
-          res.json(resp.data);
+          if(customerId!=null){
+            res.json(resp.data);
+          }
+          else{
+            User.updateOne(query,{$set: { 'customerId': resp.data.customerId}}, {upsert: true}, function(err, doc) {
+              if (err) console.log(err);
+              else console.log('Successfully saved.');
+            });
+            res.json(resp.data);
+          }
       })
       .catch( (error)=>{
         console.log(error);
