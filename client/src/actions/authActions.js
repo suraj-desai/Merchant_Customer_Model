@@ -1,9 +1,7 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
-import React from 'react';
 import { GET_ERRORS, SET_CURRENT_USER, USER_LOADING } from "./types";
-import { Redirect,Link } from "react-router-dom";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {

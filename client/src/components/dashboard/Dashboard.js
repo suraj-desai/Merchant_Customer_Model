@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
-import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
 import axios from "axios";
 // import { payment } from "../../actions/authActions";
@@ -17,7 +15,7 @@ class Dashboard extends Component {
         street:"",
         city:"",
         zip:"",
-        amount:0,
+        amount:"",
         errors: {},
         singleUseCustomerToken:"",  
     };
@@ -43,22 +41,30 @@ class Dashboard extends Component {
   };
   checkout=async (e)=> {
     e.preventDefault();
-    
-    const userData=this.props.auth.user;
-    await axios
-      .post("/api/users/token", userData)
-      .then(res => {
-          this.state.singleUseCustomerToken=res.data.singleUseCustomerToken;
-      })
-      .catch(()=>{
-      })
-    if(this.state.singleUseCustomerToken==null){
-      
-      this.checkoutWithoutToken();
+    if(this.state.amount===""||this.state.city===""||this.state.name===""||
+    this.state.street===""||this.state.zip===""){
+      alert("Please enter valid details")
+    }
+    else if(this.state.amount<=0){
+      alert("Amount should be greater than 0");
     }
     else{
+      const userData=this.props.auth.user;
+      await axios
+        .post("/api/users/token", userData)
+        .then(res => {
+            this.state.singleUseCustomerToken=res.data.singleUseCustomerToken;
+        })
+        .catch(()=>{
+        })
+        if(this.state.singleUseCustomerToken==null){
       
-      this.checkoutWithToken();
+        this.checkoutWithoutToken();
+        }
+        else{
+      
+        this.checkoutWithToken();
+        }
     }
 };
 
